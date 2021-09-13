@@ -1,0 +1,40 @@
+version: "3"
+services:
+
+  nginx1:
+    restart: unless-stopped
+    image: nginx
+    container_name: nginx1
+    network_mode: "bridge"    
+    ports:
+      - "81:80"
+    volumes:
+      - "vol-data:/usr/share/nginx/html:ro"
+    depends_on:
+      - htmls
+
+  nginx2:
+    restart: unless-stopped
+    image: nginx
+    container_name: nginx2
+    network_mode: "bridge"    
+    ports:
+      - "82:80"
+    volumes:
+      - "vol-data:/usr/share/nginx/html:ro"
+    depends_on:
+      - htmls
+
+  htmls:
+    restart: unless-stopped
+    build: 
+      context: .
+    image: local/htmls
+    container_name: htmls
+    network_mode: "bridge"
+    command: ["/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait" ]
+    volumes:
+      - "vol-data:/appdata"
+        
+volumes:
+  vol-data: {}
